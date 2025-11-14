@@ -1,39 +1,42 @@
 name: Update XML to CSV
-
+ 
 on:
   schedule:
     - cron: "0 3 * * *"   # Tous les jours à 03h UTC
   workflow_dispatch:       # Permet de lancer manuellement
   push:
     branches: [ main ]
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+ 
     steps:
+      # 1️⃣ Récupérer le code du repo
       - name: Checkout repository
         uses: actions/checkout@v3
-
+ 
+      # 2️⃣ Installer Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
+ 
+      # 3️⃣ Installer la dépendance requests
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
-
+ 
+      # 4️⃣ Exécuter le script XML → CSV
       - name: Run XML to CSV script
         run: |
           python scripts/xml_to_csv.py
-
+ 
+      # 5️⃣ Commit et push si CSV a changé
       - name: Commit and push changes
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          
-          git add products.csv
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update CSV from XML"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update CSV from XML"
+          branch: main
+          file_pattern: products.csv

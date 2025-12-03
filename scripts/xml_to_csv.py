@@ -33,10 +33,14 @@ rows = []
 for u in urls:
     loc = u.find("sm:loc", ns)
     lastmod = u.find("sm:lastmod", ns)
- 
+    changefreq = u.find("sm:changefreq", ns)
+    priority = u.find("sm:priority", ns)
+
     rows.append({
-        "url": loc.text if loc is not None else "",
-        "lastmod": lastmod.text if lastmod is not None else ""
+        "loc": loc.text if loc is not None else "",
+        "lastmod": lastmod.text if lastmod is not None else "",
+        "changefreq": changefreq.text if changefreq is not None else "",
+        "priority": priority.text if priority is not None else ""
     })
  
 if not rows:
@@ -46,7 +50,7 @@ if not rows:
 # Écriture du CSV à la racine
 try:
     with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["url", "lastmod"])
+        writer = csv.DictWriter(f, fieldnames=["loc", "lastmod", "changefreq", "priority"])
         writer.writeheader()
         writer.writerows(rows)
     print(f"CSV généré avec succès : {CSV_PATH} ({len(rows)} lignes)")
